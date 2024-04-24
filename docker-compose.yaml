@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  app:
+    container_name: app
+    restart: always
+    image: app:latest
+    build: .
+    ports:
+      - "8000:8000"
+
+  db:
+    container_name: db
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres-pass
+      - POSTGRES_DB=blog_db
