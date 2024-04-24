@@ -1,6 +1,8 @@
 name: Code Check CI/CD
 on:
   workflow_dispatch:
+  push:
+    branches: [ "*" ]
 jobs:
   deploy:
     name: check code
@@ -9,9 +11,28 @@ jobs:
     defaults:
       run:
         working-directory: ${{ github.workspace }}
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres-pass
+          POSTGRES_DB: blog_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: cp .env.example .env
 
       - name: Run app
         run: docker compose up -d --build
@@ -19,7 +40,7 @@ jobs:
       - name: Curl
         run: |
           sleep 5s
-          curl -v http://127.0.0.1:8000/course/list/
+          curl -v http://127.0.0.1:8000/health/
 
       - name: Run API Tests
         uses: actions/setup-node@v4
