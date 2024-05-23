@@ -16,8 +16,8 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: Install pytest
-        run: pip install -r requirements.txt
+#      - name: Install pytest
+#        run: pip install -r requirements.txt
 
       - name: Create .env file
         run: cp .env.example .env
