@@ -3,6 +3,8 @@ services:
   app:
     container_name: app
     restart: always
+    volumes:
+      - .:/my_code
     image: app:latest
     build: .
     ports:
