@@ -5,13 +5,13 @@ from .models import Article, Tag, Comment, Follow, Reaction, Notification
 class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = ['id', 'title', 'content', 'author', 'publication_date', 'tags', 'claps', 'views']
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
+        fields = ['id', 'name', 'description']
 
 
 class CommentSerializer(serializers.ModelSerializer):

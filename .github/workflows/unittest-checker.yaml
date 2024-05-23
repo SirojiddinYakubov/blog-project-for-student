@@ -2,7 +2,7 @@ name: Code Check CI/CD
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "*" ]
 jobs:
   deploy:
     name: check code
@@ -11,21 +11,6 @@ jobs:
     defaults:
       run:
         working-directory: ${{ github.workspace }}
-
-#    services:
-#      postgres:
-#        image: postgres:15
-#        env:
-#          POSTGRES_USER: postgres
-#          POSTGRES_PASSWORD: postgres-pass
-#          POSTGRES_DB: blog_db
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#        ports:
-#          - 5432:5432
 
     steps:
       - name: Check out the repo
@@ -42,15 +27,17 @@ jobs:
           sleep 5s
           curl -v http://127.0.0.1:8000/health/
 
-      - name: Run API Tests
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm install -g newman
-      - run: newman run "${{ secrets.CHECK_FILE }}" --reporter-json-export ./newman/api-checker-report.json --verbose -r cli,json
-        continue-on-error: true
-      #      - run: newman run "https://api.getpostman.com/collections/${{collectionID}}?apikey=${{ secrets.POSTMANAPIKEY }}" --environment "https://api.getpostman.com/environments/${{ environmentID }}?apikey=${{ secrets.POSTMANAPIKEY }}"
+      - name: Unzip check folder
+        run: |
+          unzip tests.zip
 
+#      - name: Download UI Test File
+#        run: |
+#          curl -L "${{ secrets.CHECK_FILE }}" > ui-test.py
+
+      - name: Run UI Tests
+        run: pytest -c tests/pytest.ini -vv --json-report --json-report-file=./reports/ui-checker-report.json --json-report-indent=2
+        continue-on-error: true
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
